@@ -1,0 +1,308 @@
+Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
+  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
+S e e d for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+S e e d for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+S e e d for failures: 12346497
+failNodeId:3Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 10
+Num rounds: 18
+Num successful phases: 1
+Num phases: 3
+Num messages: 30
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 10
+Num rounds: 18
+Num successful phases: 1
+Num phases: 3
+Num messages: 30
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 10
+Num rounds: 18
+Num successful phases: 1
+Num phases: 3
+Num messages: 30
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 10
+Num rounds: 18
+Num successful phases: 1
+Num phases: 3
+Num messages: 30
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1, k:3 r:0 proc:0]
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 42
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 48
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1]
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 48
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 48
+
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 48
+
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1]
+Reproduced the bug.
+Failures: [k:0 r:4 proc:2, k:1 r:2 proc:2, k:1 r:4 proc:0, k:2 r:0 proc:0, k:2 r:0 proc:1]
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 50
+
+Timed out - shutting down
+Num successful rounds: 16
+Num rounds: 24
+Num successful phases: 2
+Num phases: 4
+Num messages: 50
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 0
+Num rounds: 0
+Num successful phases: 0
+Num phases: 0
+Num messages: 0
+
+failNodeId:3  Seed for failures: 12346497
+Num successful rounds: 6
+Num rounds: 6
+Num successful phases: 1
+Num phases: 1
+Num messages: 18
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
+failNodeId:3  Seed for failures: 12346497
+Timed out - shutting down
+Num successful rounds: 18
+Num rounds: 18
+Num successful phases: 3
+Num phases: 3
+Num messages: 54
+
