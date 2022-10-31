@@ -12,9 +12,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utils.FileUtils;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Runs Cassandra with the specifies scheduler and parameters
@@ -26,22 +28,22 @@ import java.util.List;
 public class SystemRunner {
 
     public static void main(String[] args) throws Exception {
+        // Setup the log4j environment
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.INFO);
 
-        ExplorerConf conf = ExplorerConf.initialize("explorer.conf", args);
+        ExplorerConf conf = ExplorerConf.initialize("/home/xie/explorer-server/test-server/explorer.conf", args);
 
         String failureSettingsJsonStr = "";
         List<String> options = Arrays.asList(args);
         if(options.contains("failures")) {
-          try {
-              failureSettingsJsonStr = failureSettingsJsonStr =options.get(options.indexOf("failures") + 1);
-
-          } catch (Exception e) {
-            throw new RuntimeException("Invalid command line arguments.\n" + e.getMessage());
-          }
+            try {
+                failureSettingsJsonStr = failureSettingsJsonStr =options.get(options.indexOf("failures") + 1);
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid command line arguments.\n" + e.getMessage());
+            }
         }
-
+//         System.out.println(failureSettingsJsonStr);
         runAll(conf, failureSettingsJsonStr);
     }
 
@@ -56,7 +58,9 @@ public class SystemRunner {
                     if(failureSettingsJsonStr != null && !failureSettingsJsonStr.isEmpty())
                         settings = NodeFailureSettings.toObject(failureSettingsJsonStr);
                     else
-                        settings = new NodeFailureSettings(conf.randomSeed);
+                        //TODO:
+                       settings = new NodeFailureSettings(conf.randomSeed, conf.failPhase, conf.failRound,conf.failNodeId);
+//                        settings = new NodeFailureSettings(conf.randomSeed);
                     //System.out.println(settings.toJsonStr());
                     scheduler = schedulerClass.getConstructor(NodeFailureSettings.class).newInstance(settings);
                     break;
@@ -76,7 +80,7 @@ public class SystemRunner {
             runAll(conf, scheduler);
 
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
-            | InvocationTargetException | InstantiationException e) {
+                | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
             System.exit(-1);
         }
@@ -92,8 +96,6 @@ public class SystemRunner {
 
         Thread serverThread = new Thread(testingServer, "testing-server");
         serverThread.start();
-
-
 
         // start distributed system nodes and the workload
         WorkloadDriver workloadDriver = new CassWorkloadDriver(conf.getWorkloadDirs(), conf.numberOfClients, conf.javaPath);
@@ -122,8 +124,11 @@ public class SystemRunner {
         // send workload
         workloadDriver.sendWorkload();
 
+        //TODO:
         while(!scheduler.isExecutionCompleted())
         {
+            // if(conf.failPhase == -1 && !conf.isFinish)
+            //     return;
             Thread.sleep(250);
         }
         FileUtils.writeToFile(conf.resultFile, scheduler.getStats(), true);

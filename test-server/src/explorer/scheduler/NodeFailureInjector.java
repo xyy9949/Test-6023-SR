@@ -1,11 +1,20 @@
 package explorer.scheduler;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ProtocolVersion;
+import com.datastax.driver.core.policies.RoundRobinPolicy;
+import com.datastax.driver.core.policies.WhiteListPolicy;
 import explorer.ExplorerConf;
 import explorer.PaxosEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.*;
 
 /**
@@ -33,6 +42,8 @@ public class NodeFailureInjector extends Scheduler {
   //private List<String> ballots = Arrays.asList("33d9f0f0-08c5-11e7-845e-", "33da1800-08c5-11e7-845e-", "33da3f10-08c5-11e7-845e-", "33da6620-08c5-11e7-845e-", "33da8d30-08c5-11e7-845e-");
   private List<String> ballots;
 
+  List<String> mess;
+
   // for stats:
   int numSuccessfulRounds = 0, numSuccessfulPhases = 0;
 
@@ -53,6 +64,9 @@ public class NodeFailureInjector extends Scheduler {
     period = conf.linkEstablishmentPeriod;
     numTotalRounds = 0;
 
+    //TODO:
+    mess = new ArrayList<>();
+
     if(settings.equals(NodeFailureSettings.ONLINE_CONTROLLED)) {
       log.debug("Using online control of the failing nodes.");
       if(ExplorerConf.getInstance().logResult)
@@ -60,12 +74,12 @@ public class NodeFailureInjector extends Scheduler {
     } else {
       log.debug("Using failures: " + settings.getFailures() + " seed: " + settings.seed);
       if(ExplorerConf.getInstance().logResult)
-        FileUtils.writeToFile(ExplorerConf.getInstance().resultFile, "Seed for failures: " + settings.seed, true);
+        FileUtils.writeToFile(ExplorerConf.getInstance().resultFile, "failNodeId:" + conf.failNodeId +  "  Seed for failures: " + settings.seed, true);
     }
   }
 
   @Override
-  synchronized public void addNewEvent(int connectionId, PaxosEvent message) {
+  synchronized public void addNewEvent(int connectionId, PaxosEvent message){
     super.addNewEvent(connectionId, message);
 
     if(message.getVerb().equals("PAXOS_PREPARE") && ballots.size() == currentPhase) {
@@ -77,9 +91,12 @@ public class NodeFailureInjector extends Scheduler {
   }
 
   @Override
-  synchronized protected void checkForSchedule() {
+  synchronized protected void checkForSchedule(){
     Set<PaxosEvent> keys = events.keySet();
     for(PaxosEvent m: keys) {
+//      System.out.print("m:");
+//      System.out.println(m);
+
       if(isOfCurrentRound(m)) {
         if(isToDrop(m)) {
           log.info("Dropped message: " + m.toString() + " " + m.getPayload());
@@ -93,7 +110,11 @@ public class NodeFailureInjector extends Scheduler {
           schedule(m);
           executedInCurRound ++;
         }
-        checkUpdateRound();
+        try{
+          checkUpdateRound();
+        }catch (IOException e){
+          e.printStackTrace();
+        }
         checkForSchedule();
         return;
       }
@@ -122,19 +143,47 @@ public class NodeFailureInjector extends Scheduler {
       failedProcesses.add(match.process);
       return true;
     }
-
+    mess.add(message.toString());
     return false;
   }
 
   // the standard algorithm increases the rounds by just collecting messages sent in the round - this is an optimization
-  synchronized private void checkUpdateRound() {
+  synchronized private void checkUpdateRound() throws IOException {
     if((toExecuteInCurRound - executedInCurRound) == 0) { // move to next round
-      currentRound ++;
-      numTotalRounds ++;
-      if(executedInCurRound >= ((NodeFailureSettings)settings).NUM_MAJORITY) numSuccessfulRounds ++;
-
+      currentRound++;
+      numTotalRounds++;
+      if (executedInCurRound >= ((NodeFailureSettings) settings).NUM_MAJORITY) numSuccessfulRounds++;
+//      System.out.println(currentRound);
       // inform coverage strategy
       //coverageStrategy.onRoundComplete(rounds.get(currentRound-1).toString(), failedProcesses);
+      // TODO: it's the time to enter the next round:
+//       if(conf.failPhase != -1 && !conf.isFinish && currentRound == (conf.failPhase * 6 + conf.failRound + 1)){
+//         String state = "" + Integer.toString(currentPhase) + " " + Integer.toString(currentRound) + " " + Integer.toString(toExecuteInCurRound) + " " + Integer.toString(executedInCurRound) + " " + droppedFromNextRound;
+//         try{
+//           String fileName = "failStatePhase" + Integer.toString(conf.failPhase) + "Round" + Integer.toString(conf.failRound);
+//           File file = new File("/home/xie/explorer-server/test-server/" + fileName);
+//           if(!file.exists()){
+//             file.createNewFile();
+//           }
+//           if(!conf.failStateMap.containsValue(state)){
+//             conf.failStateMap.put(conf.failNodeId, state);
+//             System.out.println(conf.failNodeId);
+//           }
+//           FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+//           BufferedWriter bw = new BufferedWriter(fw);
+//           for(Map.Entry<String, String> entry: conf.failStateMap.entrySet()){
+//             bw.write(entry.getKey() + "|" + entry.getValue()+"\n");
+//           }
+//           bw.close();
+//           fw.close();
+//
+//           conf.isFinish = true;
+//
+//         }catch (IOException e){
+//           e.printStackTrace();
+//         }
+//      }
+
 
       // update the next round - state machine
       switch(rounds.get(currentRound-1)) {
@@ -149,6 +198,10 @@ public class NodeFailureInjector extends Scheduler {
           }
           break;
         case PAXOS_PREPARE_RESPONSE:
+          //TODO:
+//          Cluster cluster = getCluster(nodeId).init()
+//          Cluster cluster = getCluster(0).
+
           if(toExecuteInCurRound < ((NodeFailureSettings)settings).NUM_MAJORITY) {
             coverageStrategy.onRequestPhaseComplete(rounds.get(currentRound-1).toString(), failedProcesses);
             rounds.add(PaxosEvent.ProtocolRound.PAXOS_PREPARE);
@@ -201,6 +254,11 @@ public class NodeFailureInjector extends Scheduler {
           log.error("Invalid protocol state");
       }
 
+//      System.out.println("OUT:"+currentRound+" "+currentPhase+" "+toExecuteInCurRound+" "+ executedInCurRound + " ");
+//      System.out.println();
+//      System.out.println(rounds.get(currentRound-1));
+
+
       // update values related to failures for the current round:
       executedInCurRound = 0;
       droppedFromNextRound = 0;
@@ -221,7 +279,7 @@ public class NodeFailureInjector extends Scheduler {
 
   // Customized for Cassandra example - the default way of detecting the messages in a round is to collect messages for some timeout
   synchronized private boolean isOfCurrentRound(PaxosEvent m) {
-      return isOfCurrentPhase(m) && m.getVerb().equals(rounds.get(currentRound).toString());
+    return isOfCurrentPhase(m) && m.getVerb().equals(rounds.get(currentRound).toString());
   }
 
   @Override
@@ -254,10 +312,10 @@ public class NodeFailureInjector extends Scheduler {
     sb.append("Num successful phases: ").append(numSuccessfulPhases).append("\n");
     sb.append("Num phases: ").append(currentPhase).append("\n");
     sb.append("Num messages: ").append(scheduled.size()).append("\n");
+//    sb.append("FailNodeId: ").append(conf.failNodeId).append("\n");
 
     if(conf.logSchedule) sb.append(getScheduleAsStr());
     return sb.toString();
   }
-
 
 }

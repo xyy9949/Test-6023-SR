@@ -3,6 +3,7 @@ package explorer.workload;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.*;
 import explorer.ExplorerConf;
+import explorer.verifier.CassVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,19 +23,28 @@ class CassWorkload {
   static void execute6023() {
     try {
       executeCql(0, "test", "UPDATE tests SET value_1 = 'A' WHERE name = 'testing' IF owner = 'user_1'");
-      //executeCql(0, "test", "UPDATE tests SET value_1 = 'A' WHERE name = 'testing' IF owner = 'user_1';");//.get();
       Thread.sleep(timeBetweenQueriesMillis);
+      new CassVerifier().writeLog();
 
       executeCql(1, "test", "UPDATE tests SET value_1 = 'B', value_2 = 'B' WHERE name = 'testing' IF  value_1 = 'A'");
-      //executeCql(1, "test", "UPDATE tests SET value_1 = 'B', value_2 = 'B' WHERE name = 'testing' IF owner = 'user_1';");//.get();
       Thread.sleep(timeBetweenQueriesMillis);
+      new CassVerifier().writeLog();
 
       executeCql(2, "test", "UPDATE tests SET value_3 = 'C' WHERE name = 'testing' IF owner = 'user_1'");
-      //executeCql(2, "test", "UPDATE tests SET value_3 = 'C' WHERE name = 'testing' IF owner = 'user_1';");//.get();
       Thread.sleep(timeBetweenQueriesMillis);
+      new CassVerifier().writeLog();
+
     } catch (InterruptedException e) {
       log.error("Interrupted while sleeping", e);
     }
+//    executeCql(0, "test", "UPDATE tests SET value_1 = 'A' WHERE name = 'testing' IF owner = 'user_1'");
+//    new CassVerifier().writeLog();
+//
+//    executeCql(1, "test", "UPDATE tests SET value_1 = 'B', value_2 = 'B' WHERE name = 'testing' IF  value_1 = 'A'");
+//    new CassVerifier().writeLog();
+//
+//    executeCql(2, "test", "UPDATE tests SET value_3 = 'C' WHERE name = 'testing' IF owner = 'user_1'");
+//    new CassVerifier().writeLog();
   }
 
   static void reset6023() {

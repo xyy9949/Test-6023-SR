@@ -4,8 +4,7 @@ import explorer.workload.WorkloadDirs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +53,16 @@ public class ExplorerConf {
 
   public final int maxExecutionDuration;
 
+  // TODO: add
+  public final int failPhase;
+  public final int failRound;
+  public final String failNodeId;
+
+
+  public Map<String, String> failStateMap = new HashMap<>();
+  public boolean isFinish;
+  public int runningPhase;
+
   private ExplorerConf(String configFile, String[] args) {
     Properties prop = loadProperties(configFile);
     Map<String, String> overrideArgs = new HashMap();
@@ -63,6 +72,41 @@ public class ExplorerConf {
               .filter(s -> s.contains("="))
               .map(s -> Arrays.asList(s.split("=")))
               .collect(Collectors.toMap(kv -> kv.get(0), kv -> kv.get(1)));
+    }
+
+    //TODO:
+    if(overrideArgs.containsKey("failPhase")){
+      failPhase = Integer.parseInt(overrideArgs.get("failPhase"));
+      failRound = Integer.parseInt(overrideArgs.get("failRound"));
+      failNodeId = overrideArgs.get("failNodeId");
+
+      try{
+        String fileName = "failStatePhase" + overrideArgs.get("failPhase") + "Round" + overrideArgs.get("failRound");
+        File file = new File("/home/xie/explorer-server/test-server/" + fileName);
+
+        if(!file.exists()){
+          file.createNewFile();
+        }else {
+          FileInputStream fis = new FileInputStream(file);
+          InputStreamReader isr = new InputStreamReader(fis, "utf-8");
+          BufferedReader br = new BufferedReader(isr);
+          String line = "";
+          String[] arrs = null;
+          while((line = br.readLine()) != null){
+            arrs = line.split("|");
+            failStateMap.put(arrs[0], arrs[1]);
+          }
+          br.close();
+          isr.close();
+          fis.close();
+        }
+      }catch (IOException e){
+        e.printStackTrace();
+      }
+    }else{
+      failPhase = -1;
+      failRound = -1;
+      failNodeId = "3";
     }
 
     randomSeed =  Integer.parseInt(overrideArgs.getOrDefault("randomSeed", prop.getProperty("randomSeed")));
@@ -103,12 +147,18 @@ public class ExplorerConf {
     logSchedule = Boolean.parseBoolean(overrideArgs.getOrDefault("logSchedule", prop.getProperty("logSchedule")));
 
     String[] schedulerFullPath = schedulerClass.split(".");
-    if(schedulerFullPath.length > 0)
-      resultFile = overrideArgs.getOrDefault("resultFile",
-              prop.getProperty("resultFile").concat(schedulerFullPath[schedulerFullPath.length-1]).concat("period" + linkEstablishmentPeriod).concat("d" + bugDepth));
-    else
-      resultFile = overrideArgs.getOrDefault("resultFile",
-              prop.getProperty("resultFile").concat("Period" + linkEstablishmentPeriod).concat("D" + bugDepth));
+
+    // TODO:
+    if(overrideArgs.containsKey("failPhase")){
+      resultFile = overrideArgs.get("resultFile");
+    }else{
+      if(schedulerFullPath.length > 0)
+        resultFile = overrideArgs.getOrDefault("resultFile",
+                prop.getProperty("resultFile").concat(schedulerFullPath[schedulerFullPath.length-1]).concat("period" + linkEstablishmentPeriod).concat("d" + bugDepth));
+      else
+        resultFile = overrideArgs.getOrDefault("resultFile",
+                prop.getProperty("resultFile").concat("Period" + linkEstablishmentPeriod).concat("D" + bugDepth));
+    }
 
     maxExecutionDuration = Integer.parseInt(overrideArgs.getOrDefault("maxExecutionDuration", prop.getProperty("maxExecutionDuration")));
   }

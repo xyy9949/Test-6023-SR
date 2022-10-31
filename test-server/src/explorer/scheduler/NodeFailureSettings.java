@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileUtils;
 
+import javax.xml.soap.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,11 +42,39 @@ public class NodeFailureSettings extends SchedulerSettings {
   public NodeFailureSettings(int seed) {
     this.seed = seed;
     random = new Random(seed);
-    failures = getRandomFailures();
-    //failures = getFailuresToReproduceBug();
+    // TODO:
+//    failures = getRandomFailures();
+    // failures = getTestFailures();
+    failures = getFailuresToReproduceBug();
     String failuresAsStr = toString();
     log.info("Failure Injecting Settings: \n" + failuresAsStr);
   }
+
+  public List<NodeFailure> getTestFailures() {
+    List<NodeFailureSettings.NodeFailure> f  = new ArrayList<>();
+    f.add(new NodeFailureSettings.NodeFailure(0, 4, 0));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 5, 1));
+    f.add(new NodeFailureSettings.NodeFailure(0, 4, 2));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 5, 2));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 2, 2));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 3, 1));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 4, 2));
+//    f.add(new NodeFailureSettings.NodeFailure(0, 5, 1));
+//    f.add(new NodeFailureSettings.NodeFailure(1, 4, 0));
+//    f.add(new NodeFailureSettings.NodeFailure(2, 0, 0));
+//    f.add(new NodeFailureSettings.NodeFailure(2, 0, 1));
+//    f.add(new NodeFailureSettings.NodeFailure(3, 0, 0));
+    return f;
+  }
+
+  public NodeFailureSettings(int seed, int failPhase, int failRound, String failNodeId){
+    this.seed = seed;
+    String failNodeArr[] = failNodeId.split(",");
+    failures = getCertainFailures(failPhase, failRound, failNodeArr);
+    String failuresAsStr = toString();
+    log.info("Failure Injecting Settings: \n" + failuresAsStr);
+  }
+
 
   public NodeFailureSettings(List<NodeFailure> failures) {
     this.failures = failures;
@@ -126,6 +155,20 @@ public class NodeFailureSettings extends SchedulerSettings {
     return f;
   }
 
+  // TODO:
+  public List<NodeFailureSettings.NodeFailure> getCertainFailures(int phaseToFailAt, int roundToFailAt, String[] failNodeArr){
+    List<NodeFailureSettings.NodeFailure> f  = new ArrayList<>();
+    for(int i = 0; i < failNodeArr.length; i++){
+      String failNodePerRound[] = failNodeArr[i].split("-");
+      for(int j = 0; j < failNodePerRound.length; j++){
+        if(!failNodePerRound[j].equals("3"))
+//          System.out.println(i/6 + " " + i%6 + " " + failNodePerRound[j]);
+          f.add(new NodeFailure(i / 6, i % 6, Integer.parseInt(failNodePerRound[j])));
+      }
+    }
+    return f;
+  }
+
   private List<NodeFailureSettings.NodeFailure> getUnboundedRandomFailures() {
     List<NodeFailureSettings.NodeFailure> f  = new ArrayList<>();
 
@@ -189,7 +232,7 @@ public class NodeFailureSettings extends SchedulerSettings {
     f.add(new NodeFailure(1, 4, 0));
     f.add(new NodeFailure(2, 0, 0));
     f.add(new NodeFailure(2, 0, 1));
-    f.add(new NodeFailure(3, 0, 0));
+//    f.add(new NodeFailure(3, 0, 0));
     return f;
   }
 
@@ -212,8 +255,8 @@ public class NodeFailureSettings extends SchedulerSettings {
       if(!(obj instanceof NodeFailure)) return false;
 
       return k == ((NodeFailure)obj).k
-          && r == ((NodeFailure)obj).r
-          && process == ((NodeFailure)obj).process;
+              && r == ((NodeFailure)obj).r
+              && process == ((NodeFailure)obj).process;
     }
 
     @Override
