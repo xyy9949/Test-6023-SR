@@ -27,7 +27,7 @@ public class CassVerifier  {
       value_2 = map.get("value_2");
       value_3 = map.get("value_3");
 
-       WriteTo("log+5+" + "null+"+ value_1 + value_2 + value_3+"+null");
+       WriteTo("log+4+" + "null+"+ value_1 + value_2 + value_3+"+null");
   }
     public static synchronized void WriteTo(String mes){
         String filePath = "/home/xie/explorer-server/test/test1.txt";

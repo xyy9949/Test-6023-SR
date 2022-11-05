@@ -18,6 +18,12 @@ if __name__ == '__main__':
 
     failNodeId = "2,3,2,3,0-2,3,3,3,0,3,1-2,3"
     
-    call("mvn {0} {1} {2}".format("exec:java", "-Dexec.mainClass=explorer.SystemRunner", "-Dexec.args=\"scheduler={0} resultFile={1} failPhase={2} failRound={3} failNodeId={4}\" ".format(scheduler, resultFile, str(0), str(0), failNodeId)), shell=True )
+    result = ["null", "1", "2", "3"]
+
+    result.sort()
+    
+    print(result)
+
+    # call("mvn {0} {1} {2}".format("exec:java", "-Dexec.mainClass=explorer.SystemRunner", "-Dexec.args=\"scheduler={0} resultFile={1} failPhase={2} failRound={3} failNodeId={4}\" ".format(scheduler, resultFile, str(0), str(0), failNodeId)), shell=True )
 
     

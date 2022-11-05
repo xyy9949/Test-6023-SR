@@ -7,6 +7,9 @@ import explorer.verifier.CassVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +62,26 @@ class CassWorkload {
       e.printStackTrace();
     }
   }
-
+  public static synchronized void WriteTo(String mes){
+    String filePath = "/home/xie/explorer-server/test/test1.txt";
+    FileWriter fw = null;
+    try
+    {
+      File file = new File(filePath);
+      if (!file.exists())
+      {
+        file.createNewFile();
+      }
+      fw = new FileWriter(filePath, true);
+      BufferedWriter bw=new BufferedWriter(fw);
+      bw.write(mes + "\n");
+      bw.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
   static void submitQueries(List<Integer> nodeIds, List<String> queries) {
     if(nodeIds.size() != queries.size()) {
       log.error("The number of nodes to submit is not equal to the number of the queries.");
@@ -82,6 +104,7 @@ class CassWorkload {
     try (Cluster cluster = getCluster(nodeId).init(); Session session = cluster.connect(keyspace).init()) {
       log.info("Executing query for cluster {}: {}", nodeId, cql);
       ResultSet resultSet = session.execute(cql);
+//      WriteTo("RESULT"+resultSet.wasApplied());
       return resultSet.wasApplied();
     } catch (Exception ex) {
       log.warn("=== Error with communication to node {}", nodeId, ex);

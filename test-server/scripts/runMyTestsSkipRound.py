@@ -10,6 +10,19 @@ from subprocess import call
 from typing import List
 from TT import getState, clearLogFile
 
+
+def hasNodeId(tmpState, failNodeId):
+    for state in iter(tmpState):
+        if state[2] == failNodeId:
+            return True
+    return False
+
+def hasLog(tmpState):
+    for state in iter(tmpState):
+        if state[0] == "log":
+            return True
+    return False
+
 def main():
     os.chdir("..")
 
@@ -82,23 +95,7 @@ def main():
                             failNodeId = "1-2,3"
                         else:
                             failNodeId = "0-1-2,3"
-                        # if i == 1:
-                        #     failNodeId = "3" # no fail in this round
-                        # elif i == 2:
-                        #     failNodeId = "0"
-                        # elif i == 3:
-                        #     failNodeId = "1"
-                        # elif i == 4:
-                        #     failNodeId = "2"
-                        # elif i == 5:
-                        #     failNodeId = "0-1"
-                        # elif i == 6:
-                        #     failNodeId = "0-2"
-                        # elif i == 7:
-                        #     failNodeId = "1-2"
-                        # else:
-                        #     failNodeId = "0-1-2"
-                        # # seed = i + 12345688
+
 
                         failNodeId = preFailNodeId[l] + "," + failNodeId
                         scheduler = "explorer.scheduler.NodeFailureInjector"
@@ -112,54 +109,57 @@ def main():
                         #     result.sort(key=lambda x:x[2])
 
                         result.sort(key=lambda x:x[2])
-
-                        # if len(result) != 0 and k != 5:
-                        #     if k == 0 or k == 2 or k == 4:
-                        #         tmpList = []
-                        #         for ii in range(len(result)):
-                        #             tmpList.append([result[ii][0], result[ii][3], result[ii][4]])
-                        #         tmpStateDict[failNodeId] = tmpList
-                        #     elif k == 1 or k == 3:
-                        #         for ii in range(len(result)):
-                        #             result[ii][0] = tmpStateDict[preFailNodeId[l]][ii][0]
-                        #             result[ii][3] = tmpStateDict[preFailNodeId[l]][ii][1]
-                        #             result[ii][4] = tmpStateDict[preFailNodeId[l]][ii][2]
-                        # if len(result) != 0:
-                        #     tmpList = []
-                        #     for ii in range(len(result)):
-                        #         tmpList.append([result[ii][0], result[ii][3], result[ii][4]])
-                        #     tmpStateDict[failNodeId] = tmpList
-
-                        if len(result) == 0:
-                            dis = 4 - k
-                            for uu in range(dis):
-                                failNodeId = failNodeId + ",3"
-                            if len(preFailNodeId)!= 0:
-                                tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
-                                for ii in range(len(tmpState)):
-                                    result.append([tmpState[ii][0], '4', 'null', tmpState[ii][3], tmpState[ii][4]])
-                            fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
-                        else:
-                            if k != 4:
-                                tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
-                                for ii in range(len(tmpState)):
-                                    if tmpState[ii][0] == "log":
-                                        result.append(tmpState[ii])
+                        if j != 0 or k != 0:
+                            tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                        # TODO: each node should have their state in each round
+                        if (len(result) == 3 and k != 4) or (len(result) == 4 and k == 4):
+                            if len(result) == 3:
+                                if j == 0 and k == 0:
+                                    result.append(['log', '4', 'null', 'null', 'null'])
+                                else:
+                                    result.append(tmpState[3])
                             fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
+                        else:
+                            tmp_nodeId = "/127.0.0."
+                            for jj in range(4):
+                                if jj != 3:
+                                    new_nodeId = tmp_nodeId + str(jj + 1)
+                                    if not hasNodeId(result, new_nodeId):
+                                        if j == 0 and k == 0:
+                                            result.append(['null', str(k), new_nodeId, 'null', 'null'])
+                                        else:
+                                            result.append([tmpState[jj][0], str(k), new_nodeId, tmpState[jj][3], tmpState[jj][4]])
+                                if jj == 3:
+                                    if not hasLog(result):
+                                        if j == 0 and k == 0:
+                                            result.append(['log', '4', 'null', 'null', 'null'])
+                                        else:
+                                            result.append(tmpState[3])
+                            if len(result) == 0:
+                                fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
+                            else:
+                                fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
+
+                        # TODO: do not forget to sort
+                        result.sort(key=lambda x:x[2])
 
 
-                        # if this phase failed:
-                        # if len(result) == 0 or k == 5:
-                        #     dis = 5 - k
+
+                        # if len(result) == 0:
+                        #     dis = 4 - k
                         #     for uu in range(dis):
                         #         failNodeId = failNodeId + ",3"
-                        #     if k == 1 or k== 3 or k == 5:
-                        #         result.append(tmpStateDict[preFailNodeId[l]])
-                        #     elif k == 2 or k == 4:
-                        #         newPos = preFailNodeId[l].rfind(",")
-                        #         result.append(tmpStateDict[preFailNodeId[l][:newPos]])
-                        #     fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round5"
+                        #     if len(preFailNodeId)!= 0:
+                        #         tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                        #         for ii in range(len(tmpState)):
+                        #             result.append([tmpState[ii][0], '4', 'null', tmpState[ii][3], tmpState[ii][4]])
+                        #     fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
                         # else:
+                        #     if k != 4:
+                        #         tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                        #         for ii in range(len(tmpState)):
+                        #             if tmpState[ii][0] == "log":
+                        #                 result.append(tmpState[ii])
                         #     fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
 
 
@@ -201,30 +201,64 @@ def main():
 
                     result = getState(j, k, logFile)
 
-
                     result.sort(key=lambda x:x[2])
+                    if j != 0 or k != 0:
+                        tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                    # TODO: each node should have their state in each round
 
+                    if (len(result) == 3 and k != 4) or (len(result) == 4 and k == 4):
+                        if len(result) == 3:
+                            if j == 0 and k == 0:
+                                result.append(['log', '4', 'null', 'null', 'null'])
+                            else:
+                                result.append(tmpState[3])
+                        fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
+                    else:
+                        tmp_nodeId = "/127.0.0."
+                        for jj in range(4):
+                            if jj != 3:
+                                new_nodeId = tmp_nodeId + str(jj + 1)
+                                if not hasNodeId(result, new_nodeId):
+                                    if j == 0 and k == 0:
+                                        result.append(['null', str(k), new_nodeId, 'null', 'null'])
+                                    else:
+                                        result.append([tmpState[jj][0], str(k), new_nodeId, tmpState[jj][3], tmpState[jj][4]])
+                            if jj == 3:
+                                if not hasLog(result):
+                                    if j == 0 and k == 0:
+                                        result.append(['log', '4', 'null', 'null', 'null'])
+                                    else:
+                                        result.append(tmpState[3])
+                        if len(result) == 0:
+                            fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
+                        else:
+                            fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
+
+                    # TODO: do not forget to sort
+                    result.sort(key=lambda x:x[2])
                     # if len(result) != 0:
                     #     tmpList = []
                     #     for ii in range(len(result)):
                     #         tmpList.append([result[ii][0], result[ii][3], result[ii][4]])
                     #     tmpStateDict[failNodeId] = tmpList
-                    if len(result) == 0:
-                        dis = 4 - k
-                        for uu in range(dis):
-                            failNodeId = failNodeId + ",3"
-                        if len(preFailNodeId)!= 0:
-                            tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
-                            for ii in range(len(tmpState)):
-                                result.append([tmpState[ii][0], '4', 'null', tmpState[ii][3], tmpState[ii][4]])
-                        fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
-                    else:
-                        if k != 4 and k!= 0:
-                            tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
-                            for ii in range(len(tmpState)):
-                                if tmpState[ii][0] == "log":
-                                    result.append(tmpState[ii])
-                        fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
+
+
+                    # if len(result) == 0:
+                    #     dis = 4 - k
+                    #     for uu in range(dis):
+                    #         failNodeId = failNodeId + ",3"
+                    #     if len(preFailNodeId)!= 0:
+                    #         tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                    #         for ii in range(len(tmpState)):
+                    #             result.append([tmpState[ii][0], '4', 'null', tmpState[ii][3], tmpState[ii][4]])
+                    #     fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round4"
+                    # else:
+                    #     if k != 4 and k!= 0:
+                    #         tmpState = eval(preFailNodeStateDict[preFailNodeId[l]])
+                    #         for ii in range(len(tmpState)):
+                    #             if tmpState[ii][0] == "log":
+                    #                 result.append(tmpState[ii])
+                    #     fileName = "/home/xie/explorer-server/test/failStatePhase" + str(j) + "Round" + str(k)
 
 
                     clearLogFile(logFile)
@@ -239,3 +273,6 @@ def main():
 if __name__ == '__main__':
 
     main()
+
+
+
